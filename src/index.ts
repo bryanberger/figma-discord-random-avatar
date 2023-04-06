@@ -10,6 +10,13 @@ import { Style, styles } from "./styles";
 import randomizeIconSvg from "bundle-text:../randomize.svg";
 import singleIconSvg from "bundle-text:../single.svg";
 
+// create a node type that only includes the ELIGIBLE_SHAPE_TYPES
+type EligibleShapeNode =
+  | RectangleNode
+  | EllipseNode
+  | VectorNode
+  | BooleanOperationNode;
+
 const ELIGIBLE_SHAPE_TYPES = [
   "RECTANGLE",
   "ELLIPSE",
@@ -25,19 +32,6 @@ const ELIGIBLE_NODE_TYPES = [
 ];
 
 const CATEGORIES = ["Abstract", "People", "Characters", "Hypesquad", "Other"];
-
-// create a node type that only includes the ELIGIBLE_SHAPE_TYPES
-type EligibleShapeNode = Exclude<
-  SceneNode,
-  | GroupNode
-  | SliceNode
-  | ConnectorNode
-  | CodeBlockNode
-  | WidgetNode
-  | EmbedNode
-  | LinkUnfurlNode
-  | MediaNode
->;
 
 const usedStyles: Set<string> = new Set();
 const styleCache = new Map<string, BaseStyle>();
