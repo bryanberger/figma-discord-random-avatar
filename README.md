@@ -13,13 +13,15 @@ Selects a random avatar style from the Discord avatar styles library.
 - Run `npm run watch` to start parcel in watch mode.
 - Open `Figma` -> `Plugins` -> `Development` -> `New Plugin...` and choose the `manifest.json` file from this repo.
 
--
-
 ## Build
 
 ```
 Run `npm run build` to build a production version.
 ```
+
+## Notice
+
+While I am a Discord employee, this is by no way endorsed as an "official" Discord integration with Figma. This is a personal project.
 
 ## License
 
