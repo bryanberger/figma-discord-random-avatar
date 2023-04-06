@@ -1,0 +1,38 @@
+{
+  "name": "figma-discord-random-avatar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "source": "src/index.ts",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf dist",
+    "watch": "parcel watch --no-hmr",
+    "build": "npm run clean && parcel build"
+  },
+  "targets": {
+    "code": {
+      "source": [
+        "src/index.ts"
+      ],
+      "distDir": "dist"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryanberger/figma-discord-random-avatar.git"
+  },
+  "author": "Bryan Berger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bryanberger/figma-discord-random-avatar/issues"
+  },
+  "homepage": "https://github.com/bryanberger/figma-discord-random-avatar#readme",
+  "devDependencies": {
+    "@figma/plugin-typings": "*",
+    "@parcel/transformer-inline-string": "^2.8.3",
+    "@types/node": "^18.7.1",
+    "parcel": "^2.5.0",
+    "rimraf": "^3.0.2"
+  }
+}

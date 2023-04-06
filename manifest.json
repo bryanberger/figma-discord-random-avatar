@@ -1,0 +1,26 @@
+{
+  "name": "Randomize Avatar(s)",
+  "id": "1225256730843786287",
+  "api": "1.0.0",
+  "main": "dist/index.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "parameterOnly": false,
+  "parameters": [
+    {
+      "name": "Pick from a category?",
+      "key": "useSpecificCategory",
+      "description": "Pick from only one of these categories, or skip to pick from all",
+      "optional": true
+    },
+    {
+      "name": "Use same avatar?",
+      "key": "useSameAvatar",
+      "description": "Use the same avatar for all eligible nodes",
+      "optional": true
+    }
+  ],
+  "editorType": [
+    "figma"
+  ]
+}
