@@ -68,7 +68,13 @@ figma.parameters.on("input", ({ query, key, result }) => {
       const filteredCategories = CATEGORIES.filter((category) =>
         category.toLowerCase().includes(query.toLowerCase())
       );
-      result.setSuggestions(filteredCategories);
+      result.setSuggestions(
+        filteredCategories.map((category) => ({
+          name: category,
+          data: category,
+        }))
+      );
+
       break;
   }
 });
