@@ -65,16 +65,14 @@ figma.parameters.on("input", ({ query, key, result }) => {
       ]);
       break;
     case "useSpecificCategory":
-      const filteredCategories = CATEGORIES.filter((category) =>
-        category.toLowerCase().includes(query.toLowerCase())
-      );
       result.setSuggestions(
-        filteredCategories.map((category) => ({
+        CATEGORIES.filter((category) =>
+          category.toLowerCase().includes(query.toLowerCase())
+        ).map((category) => ({
           name: category,
           data: category,
         }))
       );
-
       break;
   }
 });
