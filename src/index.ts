@@ -42,7 +42,6 @@ type EligibleShapeNode = Exclude<
 const usedStyles: Set<string> = new Set();
 const styleCache = new Map<string, BaseStyle>();
 
-let lastStyle: string | null = null;
 let useSameAvatarParam: boolean = false;
 let useSpecificCategoryStrParam: string | undefined;
 
@@ -104,14 +103,14 @@ figma.on("run", async ({ parameters }) => {
 
   // Apply a random style to each selected node and close the plugin when finished
   try {
+    const initialRandomStyleKey = getRandomStyle(useSpecificCategoryStrParam);
     await Promise.all(
-      selection.map((node) =>
-        applyRandomStyleToShapeNode(
-          node,
-          useSameAvatarParam,
-          useSpecificCategoryStrParam
-        )
-      )
+      selection.map((node) => {
+        const randomStyleKey = useSameAvatarParam
+          ? initialRandomStyleKey
+          : getRandomStyle(useSpecificCategoryStrParam);
+        return applyRandomStyleToShapeNode(node, randomStyleKey);
+      })
     );
     figma.closePlugin();
   } catch (err) {
@@ -128,15 +127,7 @@ figma.on("run", async ({ parameters }) => {
 });
 
 // Function to get a random style key, avoiding reusing the same key
-const getRandomStyle = (
-  useSameAvatar?: boolean,
-  useSpecificCategoryStr?: string
-): string => {
-  // reuse the last style if useSameAvatar is true
-  if (useSameAvatar && lastStyle) {
-    return lastStyle;
-  }
-
+const getRandomStyle = (useSpecificCategoryStr?: string): string => {
   let style: Style;
 
   const eligibleStyles = useSpecificCategoryStr
@@ -156,9 +147,6 @@ const getRandomStyle = (
   // Add the selected key to the used styles set
   usedStyles.add(style.key);
 
-  // store lastStyle for reuse
-  lastStyle = style.key;
-
   return style.key;
 };
 
@@ -176,19 +164,14 @@ const getStyleByKeyAsync = async (styleKey: string): Promise<BaseStyle> => {
 // Function to apply a random style to an eligible node
 const applyRandomStyleToShapeNode = async (
   node: SceneNode,
-  useSameAvatar?: boolean,
-  useSpecificCategoryStr?: string
+  styleKey: string
 ): Promise<void> => {
   // If the node is an instance or a frame, process its children recursively
   if (ELIGIBLE_CONTAINER_TYPES.includes(node.type)) {
     const instanceNode = node as InstanceNode;
     await Promise.all(
       instanceNode.children.map((child) =>
-        applyRandomStyleToShapeNode(
-          child,
-          useSameAvatar,
-          useSpecificCategoryStr
-        )
+        applyRandomStyleToShapeNode(child, styleKey)
       )
     );
     return;
@@ -226,8 +209,7 @@ const applyRandomStyleToShapeNode = async (
 
   // Try to apply a random style to the target node
   try {
-    const randomStyle = getRandomStyle(useSameAvatar, useSpecificCategoryStr);
-    const style = await getStyleByKeyAsync(randomStyle);
+    const style = await getStyleByKeyAsync(styleKey);
     targetNode.fillStyleId = style.id;
   } catch (error) {
     console.error("Error importing and/or applying style:", error);
