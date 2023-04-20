@@ -184,6 +184,14 @@ export const styles = [
     name: "Avatars/Other/Dogg",
   },
   {
+    key: "8dc31e35d68bac860bf81f3f3ae73cd2f1efd886",
+    name: "Avatars/Other/Astronaut",
+  },
+  {
+    key: "287f5e535cabf9b0513942243540be4b97039357",
+    name: "Avatars/Other/Kawaii",
+  },
+  {
     key: "04f2e7b812e511dbec3a980d46cd48b18da15207",
     name: "Avatars/Hypesquad/Brilliance",
   },
