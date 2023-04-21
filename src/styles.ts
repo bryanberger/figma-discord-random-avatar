@@ -1,12 +1,7 @@
 // Run `figma.getLocalPaintStyles().map((t) => ({ key: t.key, name: t.name }));` in the console to get a list of styleIds from a library.
 // These are from: https://www.figma.com/file/4D0e5se4L922tFF5ZDgVZV/Tools---Avatars?node-id=0-1&t=FiSebRgTnxJkBdyP-0
 // We search the name for the category to filter by, so ensure your folder structure is setup in a similar way.
-export type Style = {
-  key: string;
-  name: string;
-};
-
-export const styles = [
+export const fallbackStyles = [
   {
     key: "5b7d1dc59fc08920e75e163ac9cd6954bb21cdf6",
     name: "Avatars/People/Henri",

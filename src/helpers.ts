@@ -1,3 +1,9 @@
+import { EligibleShapeNode } from "./types";
+
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function hasOnlyVisibleStrokes(node: SceneNode): boolean {
   if (!("strokes" in node) || !("fills" in node)) {
     return false;
@@ -36,5 +42,18 @@ export function hasValidImageStyle(node: SceneNode): boolean {
     "fills" in node &&
     Array.isArray(node.fills) &&
     node.fills.some((fill) => fill.type === "IMAGE")
+  );
+}
+
+// If any of the ineligible conditions are present, the node is not eligible.
+export function isEligibleShapeNode(
+  node: EligibleShapeNode,
+  targetNode: SceneNode
+): boolean {
+  return (
+    !hasOnlyVisibleStrokes(node) &&
+    !hasNonVisibleFills(node) &&
+    (!hasStyleId(targetNode) || !hasInvalidFillTypes(node)) &&
+    (!hasStyleId(targetNode) || hasValidImageStyle(node))
   );
 }
