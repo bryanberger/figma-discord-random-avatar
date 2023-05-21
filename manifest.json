@@ -8,9 +8,15 @@
   "parameterOnly": false,
   "parameters": [
     {
-      "name": "Pick from a category?",
+      "name": "Pick from a Discord category?",
       "key": "useSpecificCategory",
       "description": "Pick from only one of these categories, or skip to pick from all",
+      "optional": true
+    },
+    {
+      "name": "Use a custom prompt?",
+      "key": "useCustomPrompt",
+      "description": "Enter a custom prompt. This overwrites the previous category selection",
       "optional": true
     },
     {
