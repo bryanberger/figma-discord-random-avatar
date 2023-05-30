@@ -1,22 +1,15 @@
 import { EligibleInstanceNode, EligibleShapeNode, Style } from "./types";
-import { isEligibleShapeNode, sleep } from "./helpers";
+import { countEligibleNodes, isEligibleShapeNode, sleep } from "./helpers";
 import { getStylesAsync } from "./styleFetch";
 import { generateAvatarAsync } from "./openai";
 
 import randomizeIconSvg from "bundle-text:../randomize.svg";
 import singleIconSvg from "bundle-text:../single.svg";
-
-const ELIGIBLE_SHAPE_TYPES = [
-  "RECTANGLE",
-  "ELLIPSE",
-  "VECTOR",
-  "BOOLEAN_OPERATION",
-];
-const ELIGIBLE_CONTAINER_TYPES = ["COMPONENT", "INSTANCE", "FRAME", "GROUP"];
-const ELIGIBLE_NODE_TYPES = [
-  ...ELIGIBLE_SHAPE_TYPES,
-  ...ELIGIBLE_CONTAINER_TYPES,
-];
+import {
+  ELIGIBLE_CONTAINER_TYPES,
+  ELIGIBLE_NODE_TYPES,
+  ELIGIBLE_SHAPE_TYPES,
+} from "./constants";
 
 const usedStyles: Set<string> = new Set();
 const styleCache = new Map<string, BaseStyle>();
@@ -149,7 +142,7 @@ figma.on("run", async ({ parameters }) => {
     if (customPrompt) {
       const avatarData: string[] | null = await generateAvatarAsync(
         customPrompt,
-        useSameAvatar ? 1 : selection.length
+        useSameAvatar ? 1 : countEligibleNodes(selection) // rough estimate of number of eligible nodes in the selection
       );
 
       if (!avatarData) {
@@ -240,6 +233,29 @@ const getStyleByKeyAsync = async (styleKey: string): Promise<BaseStyle> => {
   return style;
 };
 
+function processNode(node: SceneNode) {
+  if (!ELIGIBLE_SHAPE_TYPES.includes(node.type)) {
+    return;
+  }
+
+  const isSubtractBooleanOperation =
+    node.parent &&
+    node.parent.type === "BOOLEAN_OPERATION" &&
+    node.parent.booleanOperation === "SUBTRACT";
+
+  const targetNode = isSubtractBooleanOperation ? node.parent : node;
+
+  if (!("fillStyleId" in targetNode)) {
+    return;
+  }
+
+  if (!isEligibleShapeNode(node as EligibleShapeNode, targetNode)) {
+    return;
+  }
+
+  return targetNode;
+}
+
 // Function to apply a random style to an eligible node
 const applyStyleToShapeNode = async (
   node: SceneNode,
@@ -257,29 +273,14 @@ const applyStyleToShapeNode = async (
     return;
   }
 
-  // If the node type is not supported, return early
-  if (!ELIGIBLE_SHAPE_TYPES.includes(node.type)) {
-    return;
-  }
-
-  // Check if the node is part of a boolean operation with a subtract operation, if so, apply the style to the parent node
-  const isSubtractBooleanOperation =
-    node.parent &&
-    node.parent.type === "BOOLEAN_OPERATION" &&
-    node.parent.booleanOperation === "SUBTRACT";
-
-  const targetNode = isSubtractBooleanOperation ? node.parent : node;
-
-  if (!("fillStyleId" in targetNode)) {
-    return;
-  }
-
-  if (!isEligibleShapeNode(node as EligibleShapeNode, targetNode)) {
-    return;
-  }
-
   // Try to apply a random style or the generated avatar to the target node
   try {
+    const targetNode = processNode(node);
+
+    if (!targetNode) {
+      return;
+    }
+
     if (customPrompt) {
       const uint8array = new Uint8Array(Buffer.from(styleKey, "base64")); // convert base64 strin from openai to uint8array
       const image = figma.createImage(uint8array);

@@ -34,7 +34,6 @@ export async function generateAvatarAsync(prompt: string, n: number = 1) {
       Math.ceil(n / batchSize)
     );
 
-    console.log(prompt);
     console.log("n:", n, "batchSize:", batchSize, "numBatches:", numBatches);
 
     // Make parallel requests for each batch
@@ -64,8 +63,6 @@ export async function generateAvatarAsync(prompt: string, n: number = 1) {
     const avatars: string[] = [];
     for (const response of responses) {
       if (!response.ok) {
-        console.error(response);
-
         // check error code
         switch (response.status) {
           case 500:
@@ -89,6 +86,7 @@ export async function generateAvatarAsync(prompt: string, n: number = 1) {
       }
 
       const responseData = await response.json();
+
       if (!responseData.data) {
         console.error(responseData);
         throw new Error("Invalid response data");
