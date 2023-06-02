@@ -1,7 +1,6 @@
 import { FigmaDataStyles, FigmaStyleData, Style } from "./types";
 import { fallbackStyles } from "./styles";
 
-const CACHE_TTL = 5 * 60 * 1000;
 const API_URL = `https://api.figma.com/v1/files/${process.env.FIGMA_LIBRARY_FILE_KEY}`;
 
 const isFillStyle = ([_, style]: [string, FigmaStyleData]) =>
@@ -15,7 +14,10 @@ const toStyle = ([_, style]: [string, FigmaStyleData]): Style => ({
 async function isCacheValid(): Promise<boolean> {
   const cachedData = await figma.clientStorage.getAsync("fetchedStyles");
   if (!cachedData) return false;
-  return new Date().getTime() - cachedData.timestamp < CACHE_TTL;
+  return (
+    new Date().getTime() - cachedData.timestamp <
+    Number(process.env.FIGMA_LIBRARY_STYLE_CACHE_TTL)
+  );
 }
 
 async function fetchStylesFromLibrary(): Promise<{
